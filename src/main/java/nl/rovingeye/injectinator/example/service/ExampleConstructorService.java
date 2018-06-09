@@ -13,6 +13,6 @@ public class ExampleConstructorService {
     }
 
     public void doStuff() {
-        this.logger.log("It works");
+        this.logger.log("Constructor Injection works.");
     }
 }

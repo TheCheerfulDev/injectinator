@@ -1,9 +1,14 @@
 package nl.rovingeye.injectinator.example;
 
+import nl.rovingeye.injectinator.framework.annotation.InjectMe;
+
 public class Logger implements ILogger{
+
+    @InjectMe
+    private IAnotherLogger anotherLogger;
 
     @Override
     public void log(String message) {
-        System.out.println("I must print this: " + message);
+        this.anotherLogger.info("I must print this: " + message + " ");
     }
 }
