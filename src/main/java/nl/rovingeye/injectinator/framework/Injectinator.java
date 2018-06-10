@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
 
 public class Injectinator {
 
-    private ConfigModule configModule;
+    private final ConfigModule configModule;
 
     private Injectinator(final ConfigModule configModule) {
         this.configModule = configModule;
@@ -25,7 +25,7 @@ public class Injectinator {
             return null;
         }
 
-        if (constructorAndFieldAnnotatedWith(classToInjectInto, InjectMe.class)) {
+        if (constructorAndFieldAnnotatedPresent(classToInjectInto, InjectMe.class)) {
             throw new IllegalArgumentException("Only constructor OR field injection allowed in a single class.");
         }
 
@@ -67,24 +67,27 @@ public class Injectinator {
         return newInstance;
     }
 
-    private <T> boolean constructorAndFieldAnnotatedWith(final Class<T> clazz, final Class<? extends Annotation> annotation) {
-        boolean constructorAnnotated = false;
-        boolean anyFieldAnnotated = false;
-
-        for (final Constructor<?> constructor : clazz.getConstructors()) {
+    private boolean isConstructorAnnotationPresent(final Class<? extends Annotation> annotation, final Constructor<?>... constructors) {
+        for (final Constructor<?> constructor : constructors) {
             if (constructor.isAnnotationPresent(annotation)) {
-                constructorAnnotated = true;
-                break;
+                return true;
             }
         }
+        return false;
+    }
 
-        for (final Field field : clazz.getDeclaredFields()) {
+    private boolean isFieldAnnotationPresent(final Class<? extends Annotation> annotation, final Field... fields) {
+        for (final Field field : fields) {
             if (field.isAnnotationPresent(annotation)) {
-                anyFieldAnnotated = true;
-                break;
+                return true;
             }
         }
+        return false;
+    }
 
-        return constructorAnnotated && anyFieldAnnotated;
+    private <T> boolean constructorAndFieldAnnotatedPresent(final Class<T> clazz, final Class<? extends Annotation> annotation) {
+        return isConstructorAnnotationPresent(
+                annotation, clazz.getConstructors()) &&
+                isFieldAnnotationPresent(annotation, clazz.getDeclaredFields());
     }
 }

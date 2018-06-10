@@ -19,5 +19,4 @@ public abstract class AbstractConfigModule implements ConfigModule {
         }
         return implementation.asSubclass(type);
     }
-
 }
