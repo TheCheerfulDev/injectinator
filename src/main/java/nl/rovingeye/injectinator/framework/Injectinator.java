@@ -83,7 +83,7 @@ public class Injectinator {
             if (field.isAnnotationPresent(InjectMe.class)) {
                 field.setAccessible(true);
 
-                if (field.getAnnotation(InjectMe.class).type() == InjectType.SINGLETON) {
+                if (field.getAnnotation(InjectMe.class).injectionType() == InjectType.SINGLETON) {
                     field.set(newInstance, getSingleton(field.getType()));
                 } else {
                     final Class<?> injectable = this.configModule.getInjectable(field.getType());

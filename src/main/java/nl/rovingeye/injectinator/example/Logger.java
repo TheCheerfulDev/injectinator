@@ -1,21 +1,22 @@
 package nl.rovingeye.injectinator.example;
 
 import nl.rovingeye.injectinator.framework.annotation.InjectMe;
+import nl.rovingeye.injectinator.framework.annotation.InjectType;
 
 public class Logger implements ILogger {
 
-    @InjectMe
+    @InjectMe(injectionType = InjectType.SINGLETON)
     private IAnotherLogger anotherLogger;
 
-    private String mark = "MARK";
+    private String extraMessage = "This is the default extra message";
 
     @Override
     public void log(final String message) {
-        this.anotherLogger.info("I must print this: " + message + " " + this.mark);
+        this.anotherLogger.info("I must print this: " + message + " " + this.extraMessage);
     }
 
     @Override
-    public void setMark(final String mark) {
-        this.mark = mark;
+    public void setExtraMessage(final String extraMessage) {
+        this.extraMessage = extraMessage;
     }
 }

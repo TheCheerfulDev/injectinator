@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InjectMe {
 
-    InjectType type() default InjectType.NEW;
+    InjectType injectionType() default InjectType.NEW;
 }

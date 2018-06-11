@@ -6,7 +6,7 @@ import nl.rovingeye.injectinator.framework.annotation.InjectType;
 
 public class ExampleFieldService2 {
 
-    @InjectMe(type = InjectType.SINGLETON)
+    @InjectMe(injectionType = InjectType.SINGLETON)
     private ILogger logger;
 
     public void doStuff() {

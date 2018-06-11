@@ -6,11 +6,11 @@ import nl.rovingeye.injectinator.framework.annotation.InjectType;
 
 public class ExampleFieldService {
 
-    @InjectMe(type = InjectType.SINGLETON)
+    @InjectMe(injectionType = InjectType.SINGLETON)
     private ILogger logger;
 
     public void doStuff() {
-        this.logger.setMark("HILDE");
+        this.logger.setExtraMessage("This is the alternate extra message");
         this.logger.log("Field injection works.");
     }
 }
