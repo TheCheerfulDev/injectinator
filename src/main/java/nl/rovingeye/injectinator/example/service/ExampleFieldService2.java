@@ -4,13 +4,12 @@ import nl.rovingeye.injectinator.example.ILogger;
 import nl.rovingeye.injectinator.framework.annotation.InjectMe;
 import nl.rovingeye.injectinator.framework.annotation.InjectType;
 
-public class ExampleFieldService {
+public class ExampleFieldService2 {
 
     @InjectMe(type = InjectType.SINGLETON)
     private ILogger logger;
 
     public void doStuff() {
-        this.logger.setMark("HILDE");
         this.logger.log("Field injection works.");
     }
 }
