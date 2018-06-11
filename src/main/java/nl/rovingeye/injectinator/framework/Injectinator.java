@@ -58,7 +58,12 @@ public class Injectinator {
         final T newInstance = classToInjectInto.newInstance();
         for (final Method method : classToInjectInto.getMethods()) {
             if (method.isAnnotationPresent(InjectMe.class)) {
-                method.invoke(newInstance, (Object) inject(this.configModule.getInjectable(method.getParameterTypes()[0])));
+                checkSetter(method);
+                if (method.getAnnotation(InjectMe.class).injectionType() == InjectType.SINGLETON) {
+                    method.invoke(newInstance, getSingleton(method.getParameterTypes()[0]));
+                } else {
+                    method.invoke(newInstance, (Object) inject(this.configModule.getInjectable(method.getParameterTypes()[0])));
+                }
             }
         }
         return newInstance;
@@ -71,7 +76,7 @@ public class Injectinator {
         for (final Class<?> dependency : parameterTypes) {
             final Class<?> injectable = this.configModule.getInjectable(dependency);
             if (dependency.isAssignableFrom(injectable)) {
-                objArr[i++] = inject(injectable);
+                objArr[i++] = constructor.getAnnotation(InjectMe.class).injectionType() == InjectType.SINGLETON ? getSingleton(dependency) : inject(injectable);
             }
         }
         return classToInjectInto.getConstructor(parameterTypes).newInstance(objArr);
@@ -96,7 +101,6 @@ public class Injectinator {
 
     @SuppressWarnings("unchecked")
     private <T> T getSingleton(final Class<T> type) throws Exception {
-
         if (this.singletons.containsKey(type)) {
             return (T) this.singletons.get(type);
         }
@@ -127,5 +131,11 @@ public class Injectinator {
         return isConstructorAnnotationPresent(
                 annotation, clazz.getConstructors()) &&
                 isFieldAnnotationPresent(annotation, clazz.getDeclaredFields());
+    }
+
+    private void checkSetter(final Method method) {
+        if (method.getParameterCount() != 1) {
+            throw new IllegalArgumentException("A setter can only have 1 parameter.");
+        }
     }
 }

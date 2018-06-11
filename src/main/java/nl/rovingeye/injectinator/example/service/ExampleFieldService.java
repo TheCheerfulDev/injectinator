@@ -10,7 +10,10 @@ public class ExampleFieldService {
     private ILogger logger;
 
     public void doStuff() {
-        this.logger.setExtraMessage("This is the alternate extra message");
         this.logger.log("Field injection works.");
+    }
+
+    public void setExtraMessage(final String extraMessage) {
+        this.logger.setExtraMessage(extraMessage);
     }
 }

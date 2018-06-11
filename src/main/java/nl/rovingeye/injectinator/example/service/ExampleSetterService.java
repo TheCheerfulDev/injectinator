@@ -2,6 +2,7 @@ package nl.rovingeye.injectinator.example.service;
 
 import nl.rovingeye.injectinator.example.ILogger;
 import nl.rovingeye.injectinator.framework.annotation.InjectMe;
+import nl.rovingeye.injectinator.framework.annotation.InjectType;
 
 public class ExampleSetterService {
 
@@ -11,7 +12,7 @@ public class ExampleSetterService {
         this.logger.log("Setter Injection works.");
     }
 
-    @InjectMe
+    @InjectMe(injectionType = InjectType.SINGLETON)
     public void setLogger(final ILogger logger) {
         this.logger = logger;
     }
