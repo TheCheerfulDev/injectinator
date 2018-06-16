@@ -4,6 +4,7 @@ import nl.rovingeye.injectinator.example.AnotherLogger;
 import nl.rovingeye.injectinator.example.IAnotherLogger;
 import nl.rovingeye.injectinator.example.ILogger;
 import nl.rovingeye.injectinator.example.service.ExampleFieldService;
+import nl.rovingeye.injectinator.framework.annotation.InjectMe;
 import nl.rovingeye.injectinator.framework.module.AbstractConfigModule;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class InjectinatorTest {
         this.injectinator = Injectinator.getInjectinator(new AbstractConfigModule() {
             @Override
             public void configure() {
-                enableInjectable(ILogger.class, InjectinatorTest.MyStubLogger.class); //Nope not happening it seems...
+                enableInjectable(ILogger.class, InjectinatorTest.MyStubLogger.class);
                 enableInjectable(IAnotherLogger.class, AnotherLogger.class);
             }
         });
@@ -44,12 +45,19 @@ public class InjectinatorTest {
         assertFalse(log.isEmpty());
     }
 
+    public class MyStubLogger implements ILogger {
 
-    class MyStubLogger implements ILogger {
+        private final IAnotherLogger anotherLogger;
+
+        @InjectMe
+        public MyStubLogger(final IAnotherLogger anotherLogger) {
+            this.anotherLogger = anotherLogger;
+        }
 
         @Override
         public void log(final String message) {
             log.add(message);
+            this.anotherLogger.info(message);
         }
 
         @Override

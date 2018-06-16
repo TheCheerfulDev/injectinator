@@ -7,8 +7,8 @@ import nl.rovingeye.injectinator.framework.module.ConfigModule;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +44,7 @@ public class Injectinator {
             return null;
         }
 
-        if (constructorAndFieldAnnotatedPresent(classToInjectInto, InjectMe.class)) {
+        if (isMoreThanOneAnnotatedTypePresent(classToInjectInto, InjectMe.class)) {
             throw new IllegalArgumentException("Only constructor OR field injection allowed in a single class.");
         }
 
@@ -69,7 +69,7 @@ public class Injectinator {
     }
 
     private <T> T injectFieldsViaSetter(final Class<T> classToInjectInto) throws Exception {
-        final T newInstance = classToInjectInto.newInstance();
+        final T newInstance = getInstance(classToInjectInto);
         for (final Method method : classToInjectInto.getMethods()) {
             if (method.isAnnotationPresent(InjectMe.class)) {
                 checkSetter(method);
@@ -84,6 +84,10 @@ public class Injectinator {
     }
 
     private <T> T injectFieldsViaConstructor(final Class<T> classToInjectInto, final Constructor<?> constructor) throws Exception {
+        if (isInnerClass(classToInjectInto)) {
+            return getInnerClassInstance(classToInjectInto);
+        }
+
         final Class<?>[] parameterTypes = constructor.getParameterTypes();
         final Object[] objArr = new Object[parameterTypes.length];
         int i = 0;
@@ -97,9 +101,7 @@ public class Injectinator {
     }
 
     private <T> T injectFields(final Class<T> classToInjectInto) throws Exception {
-
         final T newInstance = getInstance(classToInjectInto);
-
         for (final Field field : classToInjectInto.getDeclaredFields()) {
             if (field.isAnnotationPresent(InjectMe.class)) {
                 field.setAccessible(true);
@@ -115,12 +117,25 @@ public class Injectinator {
         return newInstance;
     }
 
-    private <T> T getInstance(final Class<T> type) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    private <T> T getInstance(final Class<T> type) throws Exception {
         return isInnerClass(type) ? getInnerClassInstance(type) : type.newInstance();
     }
 
-    private <T> T getInnerClassInstance(final Class<T> classToInjectInto) throws NoSuchMethodException, InstantiationException, IllegalAccessException, java.lang.reflect.InvocationTargetException {
+    private <T> T getInnerClassInstance(final Class<T> classToInjectInto) throws Exception {
         final Class<?> enclosingClass = classToInjectInto.getEnclosingClass();
+        for (final Constructor<?> constructor : classToInjectInto.getConstructors()) {
+            final Object[] constructorParameterInstances = new Object[constructor.getParameterCount()];
+            if (constructor.isAnnotationPresent(InjectMe.class)) {
+                constructorParameterInstances[0] = enclosingClass.newInstance();
+                final Class<?>[] parameterTypes = constructor.getParameterTypes();
+                for (int i = 1; i < parameterTypes.length; i++) {
+                    constructorParameterInstances[i] = inject(this.configModule.getInjectable(parameterTypes[i]));
+                }
+                final Constructor<T> declaredConstructor = classToInjectInto.getDeclaredConstructor(constructor.getParameterTypes());
+                return declaredConstructor.newInstance(constructorParameterInstances);
+            }
+        }
+
         final Constructor<T> declaredConstructor = classToInjectInto.getDeclaredConstructor(enclosingClass);
         return declaredConstructor.newInstance(enclosingClass.newInstance());
     }
@@ -140,27 +155,22 @@ public class Injectinator {
     }
 
     private boolean isConstructorAnnotationPresent(final Class<? extends Annotation> annotation, final Constructor<?>... constructors) {
-        for (final Constructor<?> constructor : constructors) {
-            if (constructor.isAnnotationPresent(annotation)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(constructors).anyMatch(constructor -> constructor.isAnnotationPresent(annotation));
     }
 
     private boolean isFieldAnnotationPresent(final Class<? extends Annotation> annotation, final Field... fields) {
-        for (final Field field : fields) {
-            if (field.isAnnotationPresent(annotation)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(fields).anyMatch(field -> field.isAnnotationPresent(annotation));
     }
 
-    private <T> boolean constructorAndFieldAnnotatedPresent(final Class<T> clazz, final Class<? extends Annotation> annotation) {
+    private boolean isSetterAnnotationPresent(final Class<? extends Annotation> annotation, final Method... methods) {
+        return Arrays.stream(methods).anyMatch(method -> method.isAnnotationPresent(annotation));
+    }
+
+    private <T> boolean isMoreThanOneAnnotatedTypePresent(final Class<T> clazz, final Class<? extends Annotation> annotation) {
         return isConstructorAnnotationPresent(
                 annotation, clazz.getConstructors()) &&
-                isFieldAnnotationPresent(annotation, clazz.getDeclaredFields());
+                isFieldAnnotationPresent(annotation, clazz.getDeclaredFields()) &&
+                isSetterAnnotationPresent(annotation, clazz.getDeclaredMethods());
     }
 
     private void checkSetter(final Method method) {
