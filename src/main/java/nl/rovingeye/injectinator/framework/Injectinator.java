@@ -105,7 +105,6 @@ public class Injectinator {
         for (final Field field : classToInjectInto.getDeclaredFields()) {
             if (field.isAnnotationPresent(InjectMe.class)) {
                 field.setAccessible(true);
-
                 if (field.getAnnotation(InjectMe.class).injectionType() == InjectType.SINGLETON) {
                     field.set(newInstance, getSingleton(field.getType()));
                 } else {
@@ -126,7 +125,7 @@ public class Injectinator {
         for (final Constructor<?> constructor : classToInjectInto.getConstructors()) {
             final Object[] constructorParameterInstances = new Object[constructor.getParameterCount()];
             if (constructor.isAnnotationPresent(InjectMe.class)) {
-                constructorParameterInstances[0] = enclosingClass.newInstance();
+                constructorParameterInstances[0] = inject(enclosingClass);
                 final Class<?>[] parameterTypes = constructor.getParameterTypes();
                 for (int i = 1; i < parameterTypes.length; i++) {
                     constructorParameterInstances[i] = inject(this.configModule.getInjectable(parameterTypes[i]));
@@ -151,7 +150,6 @@ public class Injectinator {
         }
         this.singletons.put(type, inject(this.configModule.getInjectable(type)));
         return (T) this.singletons.get(type);
-
     }
 
     private boolean isConstructorAnnotationPresent(final Class<? extends Annotation> annotation, final Constructor<?>... constructors) {
