@@ -7,6 +7,7 @@ import nl.rovingeye.injectinator.framework.module.ConfigModule;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,19 @@ public class Injectinator {
     public static Injectinator getInjectinator(final ConfigModule configModule) {
         configModule.configure();
         return new Injectinator(configModule);
+    }
+
+    public static Injectinator getInjectinator() {
+        return new Injectinator(new ConfigModule() {
+            @Override
+            public void configure() {
+            }
+
+            @Override
+            public <T> Class<? extends T> getInjectable(final Class<T> type) {
+                return null;
+            }
+        });
     }
 
     public <T> T inject(final Class<T> classToInjectInto) throws Exception {
@@ -76,14 +90,16 @@ public class Injectinator {
         for (final Class<?> dependency : parameterTypes) {
             final Class<?> injectable = this.configModule.getInjectable(dependency);
             if (dependency.isAssignableFrom(injectable)) {
-                objArr[i++] = constructor.getAnnotation(InjectMe.class).injectionType() == InjectType.SINGLETON ? getSingleton(dependency) : inject(injectable);
+                objArr[i++] = (constructor.getAnnotation(InjectMe.class).injectionType() == InjectType.SINGLETON) ? getSingleton(dependency) : inject(injectable);
             }
         }
         return classToInjectInto.getConstructor(parameterTypes).newInstance(objArr);
     }
 
     private <T> T injectFields(final Class<T> classToInjectInto) throws Exception {
-        final T newInstance = classToInjectInto.newInstance();
+
+        final T newInstance = getInstance(classToInjectInto);
+
         for (final Field field : classToInjectInto.getDeclaredFields()) {
             if (field.isAnnotationPresent(InjectMe.class)) {
                 field.setAccessible(true);
@@ -97,6 +113,20 @@ public class Injectinator {
             }
         }
         return newInstance;
+    }
+
+    private <T> T getInstance(final Class<T> type) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        return isInnerClass(type) ? getInnerClassInstance(type) : type.newInstance();
+    }
+
+    private <T> T getInnerClassInstance(final Class<T> classToInjectInto) throws NoSuchMethodException, InstantiationException, IllegalAccessException, java.lang.reflect.InvocationTargetException {
+        final Class<?> enclosingClass = classToInjectInto.getEnclosingClass();
+        final Constructor<T> declaredConstructor = classToInjectInto.getDeclaredConstructor(enclosingClass);
+        return declaredConstructor.newInstance(enclosingClass.newInstance());
+    }
+
+    private <T> boolean isInnerClass(final Class<T> classToInjectInto) {
+        return classToInjectInto.getEnclosingClass() != null;
     }
 
     @SuppressWarnings("unchecked")
