@@ -80,9 +80,7 @@ public class Injectinator {
         int i = 0;
         for (final Class<?> dependency : parameterTypes) {
             final Class<?> injectable = this.configModule.getInjectable(dependency);
-            if (dependency.isAssignableFrom(injectable)) {
-                objArr[i++] = (constructor.getAnnotation(InjectMe.class).injectionType() == InjectType.SINGLETON) ? getSingleton(dependency) : inject(injectable);
-            }
+            objArr[i++] = (constructor.getAnnotation(InjectMe.class).injectionType() == InjectType.SINGLETON) ? getSingleton(dependency) : inject(injectable);
         }
         return classToInjectInto.getConstructor(parameterTypes).newInstance(objArr);
     }

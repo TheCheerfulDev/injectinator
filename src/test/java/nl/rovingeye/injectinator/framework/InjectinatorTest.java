@@ -91,6 +91,7 @@ public class InjectinatorTest {
     @Test
     public void injectWithTooManyAnnotationsThrowsException() throws Exception {
         this.expectedException.expect(IllegalArgumentException.class);
+        this.expectedException.expectMessage("Only constructor, field OR setter injection allowed in a single class.");
         this.injectinator.inject(InjectinatorTest.ClassWithTooManyAnnotations.class);
     }
 
@@ -157,6 +158,7 @@ public class InjectinatorTest {
     public void injectClassWithTooManySetterParametersThrowsException() throws Exception {
         this.injectinator = getInjectinator();
         this.expectedException.expect(IllegalArgumentException.class);
+        this.expectedException.expectMessage("A setter can only have 1 parameter.");
         this.injectinator.inject(InjectinatorTest.ClassWithTooManySetterParameters.class);
     }
 
@@ -269,7 +271,7 @@ public class InjectinatorTest {
 
     public class ClassWithTooManySetterParameters {
         @InjectMe
-        public ClassWithTooManySetterParameters(final String foo, final String bar) {
+        public void setFoo(final String foo, final String bar) {
         }
     }
 }

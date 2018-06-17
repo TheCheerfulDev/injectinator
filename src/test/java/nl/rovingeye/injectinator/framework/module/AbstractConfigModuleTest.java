@@ -38,6 +38,7 @@ public class AbstractConfigModuleTest {
     @Test
     public void getInjectableNoInjectableThrowsException() {
         this.expectedException.expect(IllegalArgumentException.class);
+        this.expectedException.expectMessage("There is no injectable for type: class java.lang.String");
         this.configModule.getInjectable(String.class);
     }
 }
