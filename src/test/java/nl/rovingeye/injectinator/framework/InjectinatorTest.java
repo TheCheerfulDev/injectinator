@@ -155,8 +155,9 @@ public class InjectinatorTest {
 
     @Test
     public void injectClassWithTooManySetterParametersThrowsException() throws Exception {
+        this.injectinator = getInjectinator();
         this.expectedException.expect(IllegalArgumentException.class);
-        this.injectinator.inject(ClassWithTooManySetterParameters.class);
+        this.injectinator.inject(InjectinatorTest.ClassWithTooManySetterParameters.class);
     }
 
     private Injectinator getInjectinator() {

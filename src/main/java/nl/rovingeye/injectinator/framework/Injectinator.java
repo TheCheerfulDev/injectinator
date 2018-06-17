@@ -32,7 +32,7 @@ public class Injectinator {
         }
 
         if (isMoreThanOneAnnotatedTypePresent(classToInjectInto, InjectMe.class)) {
-            throw new IllegalArgumentException("Only constructor OR field injection allowed in a single class.");
+            throw new IllegalArgumentException("Only constructor, field OR setter injection allowed in a single class.");
         }
 
         return injectFieldsIntoClass(classToInjectInto);
@@ -152,9 +152,18 @@ public class Injectinator {
     }
 
     private <T> boolean isMoreThanOneAnnotatedTypePresent(final Class<T> clazz, final Class<? extends Annotation> annotation) {
-        return isConstructorAnnotationPresent(annotation, clazz.getConstructors()) &&
-                isFieldAnnotationPresent(annotation, clazz.getDeclaredFields()) &&
-                isSetterAnnotationPresent(annotation, clazz.getDeclaredMethods());
+        int annotationCounter = 0;
+        if (isConstructorAnnotationPresent(annotation, clazz.getConstructors())) {
+            annotationCounter++;
+        }
+        if (isFieldAnnotationPresent(annotation, clazz.getDeclaredFields())) {
+            annotationCounter++;
+        }
+        if (isSetterAnnotationPresent(annotation, clazz.getDeclaredMethods())) {
+            annotationCounter++;
+        }
+
+        return annotationCounter > 1;
     }
 
     private void checkSetter(final Method method) {
