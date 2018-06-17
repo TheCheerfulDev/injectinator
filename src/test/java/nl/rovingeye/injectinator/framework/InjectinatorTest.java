@@ -153,6 +153,12 @@ public class InjectinatorTest {
         assertSame(exampleSetterSingletonService1.getLogger(), exampleSetterSingletonService2.getLogger());
     }
 
+    @Test
+    public void injectClassWithTooManySetterParametersThrowsException() throws Exception {
+        this.expectedException.expect(IllegalArgumentException.class);
+        this.injectinator.inject(ClassWithTooManySetterParameters.class);
+    }
+
     private Injectinator getInjectinator() {
         return Injectinator.getInjectinator(new AbstractConfigModule() {
             @Override
@@ -258,5 +264,11 @@ public class InjectinatorTest {
             this.foo = foo;
         }
 
+    }
+
+    public class ClassWithTooManySetterParameters {
+        @InjectMe
+        public ClassWithTooManySetterParameters(final String foo, final String bar) {
+        }
     }
 }

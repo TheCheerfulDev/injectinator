@@ -152,8 +152,7 @@ public class Injectinator {
     }
 
     private <T> boolean isMoreThanOneAnnotatedTypePresent(final Class<T> clazz, final Class<? extends Annotation> annotation) {
-        return isConstructorAnnotationPresent(
-                annotation, clazz.getConstructors()) &&
+        return isConstructorAnnotationPresent(annotation, clazz.getConstructors()) &&
                 isFieldAnnotationPresent(annotation, clazz.getDeclaredFields()) &&
                 isSetterAnnotationPresent(annotation, clazz.getDeclaredMethods());
     }
