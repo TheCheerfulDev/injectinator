@@ -6,7 +6,9 @@ import nl.rovingeye.injectinator.example.service.ExampleFieldService;
 import nl.rovingeye.injectinator.framework.annotation.InjectMe;
 import nl.rovingeye.injectinator.framework.module.AbstractConfigModule;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,9 @@ public class InjectinatorTest {
     private static List<String> log;
     private static List<String> extra;
     private static List<String> another;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -48,6 +53,12 @@ public class InjectinatorTest {
         assertFalse(another.isEmpty());
     }
 
+    @Test
+    public void injectWithTooManyAnnotationsThrowsException() throws Exception {
+        this.expectedException.expect(IllegalArgumentException.class);
+        this.injectinator.inject(InjectinatorTest.ClassWithTooManyAnnotations.class);
+    }
+
     public class MyStubLogger implements Logger {
 
         private final AnotherLogger anotherLogger;
@@ -73,6 +84,17 @@ public class InjectinatorTest {
         @Override
         public void info(final String message) {
             another.add(message);
+        }
+    }
+
+    public class ClassWithTooManyAnnotations {
+
+        @InjectMe
+        private String foo;
+
+        @InjectMe
+        public ClassWithTooManyAnnotations(final String foo) {
+            this.foo = foo;
         }
     }
 }

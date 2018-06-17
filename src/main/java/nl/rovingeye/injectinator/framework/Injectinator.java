@@ -26,19 +26,6 @@ public class Injectinator {
         return new Injectinator(configModule);
     }
 
-    public static Injectinator getInjectinator() {
-        return new Injectinator(new ConfigModule() {
-            @Override
-            public void configure() {
-            }
-
-            @Override
-            public <T> Class<? extends T> getInjectable(final Class<T> type) {
-                return null;
-            }
-        });
-    }
-
     public <T> T inject(final Class<T> classToInjectInto) throws Exception {
         if (classToInjectInto == null) {
             return null;
