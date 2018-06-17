@@ -37,11 +37,22 @@ public class Injectinator {
         this.configModule = configModule;
     }
 
+    /**
+     * @param configModule Valid {@link ConfigModule} that enables the {@link Injectinator} instance
+     *                     to inject annotated dependencies.
+     * @return Instance of {@link Injectinator} that can be used to inject annotated dependencies
+     * that were configured in {@link ConfigModule}.
+     */
     public static Injectinator getInjectinator(final ConfigModule configModule) {
         configModule.configure();
         return new Injectinator(configModule);
     }
 
+    /**
+     * @param classToInjectInto Class of which you wish to get an instance, including all injected dependencies.
+     * @return Instance of {@code Class<T>}, which was given as a parameter.
+     * @throws Exception when more than one type is annotated with {@link InjectMe}
+     */
     public <T> T inject(final Class<T> classToInjectInto) throws Exception {
         if (classToInjectInto == null) {
             return null;
@@ -54,8 +65,7 @@ public class Injectinator {
         return injectFieldsIntoClass(classToInjectInto);
     }
 
-    private <T> T injectFieldsIntoClass(final Class<T> classToInjectInto)
-            throws Exception {
+    private <T> T injectFieldsIntoClass(final Class<T> classToInjectInto) throws Exception {
         for (final Constructor<?> constructor : classToInjectInto.getConstructors()) {
             if (constructor.isAnnotationPresent(InjectMe.class)) {
                 return injectFieldsViaConstructor(classToInjectInto, constructor);
@@ -86,7 +96,8 @@ public class Injectinator {
         return newInstance;
     }
 
-    private <T> T injectFieldsViaConstructor(final Class<T> classToInjectInto, final Constructor<?> constructor) throws Exception {
+    private <T> T injectFieldsViaConstructor(final Class<T> classToInjectInto, final Constructor<?> constructor)
+            throws Exception {
         if (isInnerClass(classToInjectInto)) {
             return getInnerClassInstance(classToInjectInto);
         }
