@@ -2,10 +2,11 @@ package nl.rovingeye.injectinator.example.service;
 
 import nl.rovingeye.injectinator.example.logger.Logger;
 import nl.rovingeye.injectinator.framework.annotation.InjectMe;
+import nl.rovingeye.injectinator.framework.annotation.InjectType;
 
-public class ExampleFieldService {
+public class ExampleFieldSingletonService {
 
-    @InjectMe
+    @InjectMe(injectionType = InjectType.SINGLETON)
     private Logger logger;
 
     public void doStuff() {

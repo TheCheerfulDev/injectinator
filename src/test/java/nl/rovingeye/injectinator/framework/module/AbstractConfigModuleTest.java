@@ -32,7 +32,7 @@ public class AbstractConfigModuleTest {
 
     @Test
     public void getInjectableReturnsSubclass() {
-        assertEquals(this.configModule.getInjectable(BASE_CLASS), SUB_CLASS);
+        assertEquals(SUB_CLASS, this.configModule.getInjectable(BASE_CLASS));
     }
 
     @Test
