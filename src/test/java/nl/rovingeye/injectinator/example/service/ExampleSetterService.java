@@ -1,19 +1,19 @@
 package nl.rovingeye.injectinator.example.service;
 
-import nl.rovingeye.injectinator.example.ILogger;
+import nl.rovingeye.injectinator.example.logger.Logger;
 import nl.rovingeye.injectinator.framework.annotation.InjectMe;
 import nl.rovingeye.injectinator.framework.annotation.InjectType;
 
 public class ExampleSetterService {
 
-    private ILogger logger;
+    private Logger logger;
 
     public void doStuff() {
         this.logger.log("Setter Injection works.");
     }
 
     @InjectMe(injectionType = InjectType.SINGLETON)
-    public void setLogger(final ILogger logger) {
+    public void setLogger(final Logger logger) {
         this.logger = logger;
     }
 }

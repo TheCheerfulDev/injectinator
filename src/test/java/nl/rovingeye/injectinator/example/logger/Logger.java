@@ -1,6 +1,6 @@
-package nl.rovingeye.injectinator.example;
+package nl.rovingeye.injectinator.example.logger;
 
-public interface ILogger {
+public interface Logger {
 
     void log(String message);
 

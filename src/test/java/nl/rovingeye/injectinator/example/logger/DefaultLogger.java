@@ -1,12 +1,12 @@
-package nl.rovingeye.injectinator.example;
+package nl.rovingeye.injectinator.example.logger;
 
 import nl.rovingeye.injectinator.framework.annotation.InjectMe;
 import nl.rovingeye.injectinator.framework.annotation.InjectType;
 
-public class Logger implements ILogger {
+public class DefaultLogger implements Logger {
 
     @InjectMe(injectionType = InjectType.SINGLETON)
-    private IAnotherLogger anotherLogger;
+    private AnotherLogger anotherLogger;
 
     private String extraMessage = "This is the default extra message";
 
