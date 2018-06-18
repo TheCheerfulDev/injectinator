@@ -25,5 +25,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InjectMe {
 
-    InjectType injectionType() default InjectType.NEW;
+    InjectionType injectionType() default InjectionType.NEW;
 }

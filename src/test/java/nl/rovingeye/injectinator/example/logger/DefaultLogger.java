@@ -17,11 +17,11 @@
 package nl.rovingeye.injectinator.example.logger;
 
 import nl.rovingeye.injectinator.framework.annotation.InjectMe;
-import nl.rovingeye.injectinator.framework.annotation.InjectType;
+import nl.rovingeye.injectinator.framework.annotation.InjectionType;
 
 public class DefaultLogger implements Logger {
 
-    @InjectMe(injectionType = InjectType.SINGLETON)
+    @InjectMe(injectionType = InjectionType.SINGLETON)
     private AnotherLogger anotherLogger;
 
     private String extraMessage = "This is the default extra message";

@@ -17,7 +17,7 @@
 package nl.rovingeye.injectinator.framework;
 
 import nl.rovingeye.injectinator.framework.annotation.InjectMe;
-import nl.rovingeye.injectinator.framework.annotation.InjectType;
+import nl.rovingeye.injectinator.framework.annotation.InjectionType;
 import nl.rovingeye.injectinator.framework.module.ConfigModule;
 
 import java.lang.annotation.Annotation;
@@ -86,7 +86,7 @@ public class Injectinator {
         for (final Method method : classToInjectInto.getMethods()) {
             if (method.isAnnotationPresent(InjectMe.class)) {
                 checkSetter(method);
-                if (method.getAnnotation(InjectMe.class).injectionType() == InjectType.SINGLETON) {
+                if (method.getAnnotation(InjectMe.class).injectionType() == InjectionType.SINGLETON) {
                     method.invoke(newInstance, getSingleton(method.getParameterTypes()[0]));
                 } else {
                     method.invoke(newInstance, (Object) inject(this.configModule.getInjectable(method.getParameterTypes()[0])));
@@ -107,7 +107,7 @@ public class Injectinator {
         int i = 0;
         for (final Class<?> dependency : parameterTypes) {
             final Class<?> injectable = this.configModule.getInjectable(dependency);
-            objArr[i++] = (constructor.getAnnotation(InjectMe.class).injectionType() == InjectType.SINGLETON) ? getSingleton(dependency) : inject(injectable);
+            objArr[i++] = (constructor.getAnnotation(InjectMe.class).injectionType() == InjectionType.SINGLETON) ? getSingleton(dependency) : inject(injectable);
         }
         return classToInjectInto.getConstructor(parameterTypes).newInstance(objArr);
     }
@@ -117,7 +117,7 @@ public class Injectinator {
         for (final Field field : classToInjectInto.getDeclaredFields()) {
             if (field.isAnnotationPresent(InjectMe.class)) {
                 field.setAccessible(true);
-                if (field.getAnnotation(InjectMe.class).injectionType() == InjectType.SINGLETON) {
+                if (field.getAnnotation(InjectMe.class).injectionType() == InjectionType.SINGLETON) {
                     field.set(newInstance, getSingleton(field.getType()));
                 } else {
                     final Class<?> injectable = this.configModule.getInjectable(field.getType());

@@ -18,12 +18,13 @@ package nl.rovingeye.injectinator.example.service;
 
 import nl.rovingeye.injectinator.example.logger.Logger;
 import nl.rovingeye.injectinator.framework.annotation.InjectMe;
+import nl.rovingeye.injectinator.framework.annotation.InjectionType;
 
 public class ExampleConstructorService {
 
     private final Logger logger;
 
-    @InjectMe
+    @InjectMe(injectionType = InjectionType.SINGLETON)
     public ExampleConstructorService(final Logger logger) {
         this.logger = logger;
     }

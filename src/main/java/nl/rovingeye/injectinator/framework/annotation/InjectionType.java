@@ -16,7 +16,7 @@
 
 package nl.rovingeye.injectinator.framework.annotation;
 
-public enum InjectType {
+public enum InjectionType {
 
     SINGLETON, NEW
 
