@@ -1,0 +1,2 @@
+nl.rovingeye.injectinator.example.logger.Logger, nl.rovingeye.injectinator.example.logger.DefaultLogger
+nl.rovingeye.injectinator.example.logger.AnotherLogger, nl.rovingeye.injectinator.example.logger.ExtraLogger

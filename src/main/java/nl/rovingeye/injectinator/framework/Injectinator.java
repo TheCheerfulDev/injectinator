@@ -19,8 +19,10 @@ package nl.rovingeye.injectinator.framework;
 import nl.rovingeye.injectinator.framework.annotation.InjectMe;
 import nl.rovingeye.injectinator.framework.annotation.InjectionType;
 import nl.rovingeye.injectinator.framework.module.ConfigModule;
+import nl.rovingeye.injectinator.framework.module.FileConfigModule;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -46,6 +48,14 @@ public class Injectinator {
     public static Injectinator getInjectinator(final ConfigModule configModule) {
         configModule.configure();
         return new Injectinator(configModule);
+    }
+
+    /**
+     * @return Instance of {@link Injectinator} that can be used to inject annotated dependencies
+     * that were configured via {@link FileConfigModule}.
+     */
+    public static Injectinator getInjectinator() {
+        return getInjectinator(new FileConfigModule());
     }
 
     /**
@@ -106,8 +116,8 @@ public class Injectinator {
         final Object[] objArr = new Object[parameterTypes.length];
         int i = 0;
         for (final Class<?> dependency : parameterTypes) {
-            final Class<?> injectable = this.configModule.getInjectable(dependency);
-            objArr[i++] = (constructor.getAnnotation(InjectMe.class).injectionType() == InjectionType.SINGLETON) ? getSingleton(dependency) : inject(injectable);
+            objArr[i++] = (constructor.getAnnotation(InjectMe.class).injectionType() == InjectionType.SINGLETON) ?
+                    getSingleton(dependency) : inject(this.configModule.getInjectable(dependency));
         }
         return classToInjectInto.getConstructor(parameterTypes).newInstance(objArr);
     }
@@ -135,20 +145,24 @@ public class Injectinator {
     private <T> T getInnerClassInstance(final Class<T> classToInjectInto) throws Exception {
         final Class<?> enclosingClass = classToInjectInto.getEnclosingClass();
         for (final Constructor<?> constructor : classToInjectInto.getConstructors()) {
-            final Object[] constructorParameterInstances = new Object[constructor.getParameterCount()];
             if (constructor.isAnnotationPresent(InjectMe.class)) {
-                constructorParameterInstances[0] = inject(enclosingClass);
-                final Class<?>[] parameterTypes = constructor.getParameterTypes();
-                for (int i = 1; i < parameterTypes.length; i++) {
-                    constructorParameterInstances[i] = inject(this.configModule.getInjectable(parameterTypes[i]));
-                }
                 final Constructor<T> declaredConstructor = classToInjectInto.getDeclaredConstructor(constructor.getParameterTypes());
-                return declaredConstructor.newInstance(constructorParameterInstances);
+                return declaredConstructor.newInstance(getConstructorParameterInstances(enclosingClass, constructor));
             }
         }
 
         final Constructor<T> declaredConstructor = classToInjectInto.getDeclaredConstructor(enclosingClass);
         return declaredConstructor.newInstance(enclosingClass.newInstance());
+    }
+
+    private Object[] getConstructorParameterInstances(final Class<?> enclosingClass, final Constructor<?> constructor) throws Exception {
+        final Object[] constructorParameterInstances = new Object[constructor.getParameterCount()];
+        constructorParameterInstances[0] = inject(enclosingClass);
+        final Class<?>[] parameterTypes = constructor.getParameterTypes();
+        for (int i = 1; i < parameterTypes.length; i++) {
+            constructorParameterInstances[i] = inject(this.configModule.getInjectable(parameterTypes[i]));
+        }
+        return constructorParameterInstances;
     }
 
     private <T> boolean isInnerClass(final Class<T> classToInjectInto) {
@@ -164,27 +178,19 @@ public class Injectinator {
         return (T) this.singletons.get(type);
     }
 
-    private boolean isConstructorAnnotationPresent(final Class<? extends Annotation> annotation, final Constructor<?>... constructors) {
-        return Arrays.stream(constructors).anyMatch(constructor -> constructor.isAnnotationPresent(annotation));
-    }
-
-    private boolean isFieldAnnotationPresent(final Class<? extends Annotation> annotation, final Field... fields) {
-        return Arrays.stream(fields).anyMatch(field -> field.isAnnotationPresent(annotation));
-    }
-
-    private boolean isSetterAnnotationPresent(final Class<? extends Annotation> annotation, final Method... methods) {
-        return Arrays.stream(methods).anyMatch(method -> method.isAnnotationPresent(annotation));
+    private boolean isAnnotationPresent(final Class<? extends Annotation> annotation, final AnnotatedElement... elements) {
+        return Arrays.stream(elements).anyMatch(constructor -> constructor.isAnnotationPresent(annotation));
     }
 
     private <T> boolean isMoreThanOneAnnotatedTypePresent(final Class<T> clazz, final Class<? extends Annotation> annotation) {
         int annotationCounter = 0;
-        if (isConstructorAnnotationPresent(annotation, clazz.getConstructors())) {
+        if (isAnnotationPresent(annotation, clazz.getConstructors())) {
             annotationCounter++;
         }
-        if (isFieldAnnotationPresent(annotation, clazz.getDeclaredFields())) {
+        if (isAnnotationPresent(annotation, clazz.getDeclaredFields())) {
             annotationCounter++;
         }
-        if (isSetterAnnotationPresent(annotation, clazz.getDeclaredMethods())) {
+        if (isAnnotationPresent(annotation, clazz.getDeclaredMethods())) {
             annotationCounter++;
         }
 
