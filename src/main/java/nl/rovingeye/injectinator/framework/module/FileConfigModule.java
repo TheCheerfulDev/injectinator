@@ -22,6 +22,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class FileConfigModule extends AbstractConfigModule {
 
@@ -51,14 +52,15 @@ public class FileConfigModule extends AbstractConfigModule {
             throw new IllegalArgumentException(String.format("Config resource [%s] doesn't exist.", this.configResource));
         }
 
-        Files.lines(Paths.get(resource.toURI()))
-                .forEach(line -> {
-                    try {
-                        setInjectable(line);
-                    } catch (final ClassNotFoundException e) {
-                        throw new IllegalArgumentException("The specified class could not be found. Check your config.", e);
-                    }
-                });
+        try (final Stream<String> lines = Files.lines(Paths.get(resource.toURI()))) {
+            lines.forEach(line -> {
+                try {
+                    setInjectable(line);
+                } catch (final ClassNotFoundException e) {
+                    throw new IllegalArgumentException("The specified class could not be found. Check your config.", e);
+                }
+            });
+        }
     }
 
     private <T> void setInjectable(final String line) throws ClassNotFoundException {
