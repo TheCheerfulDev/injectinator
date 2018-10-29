@@ -96,7 +96,7 @@ public class Injectinator {
         for (final Method method : classToInjectInto.getMethods()) {
             if (method.isAnnotationPresent(InjectMe.class)) {
                 checkSetter(method);
-                if (method.getAnnotation(InjectMe.class).injectionType() == InjectionType.SINGLETON) {
+                if (isMethodAnnotatedAsSingleton(method)) {
                     method.invoke(newInstance, getSingleton(method.getParameterTypes()[0]));
                 } else {
                     method.invoke(newInstance, (Object) inject(this.configModule.getInjectable(method.getParameterTypes()[0])));
@@ -179,7 +179,7 @@ public class Injectinator {
     }
 
     private boolean isAnnotationPresent(final Class<? extends Annotation> annotation, final AnnotatedElement... elements) {
-        return Arrays.stream(elements).anyMatch(constructor -> constructor.isAnnotationPresent(annotation));
+        return Arrays.stream(elements).anyMatch(element -> element.isAnnotationPresent(annotation));
     }
 
     private <T> boolean isMoreThanOneAnnotatedTypePresent(final Class<T> clazz, final Class<? extends Annotation> annotation) {
@@ -195,6 +195,10 @@ public class Injectinator {
         }
 
         return annotationCounter > 1;
+    }
+
+    private boolean isMethodAnnotatedAsSingleton(final Method method) {
+        return method.getAnnotation(InjectMe.class).injectionType() == InjectionType.SINGLETON;
     }
 
     private void checkSetter(final Method method) {
