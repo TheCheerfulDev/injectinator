@@ -6,7 +6,7 @@ jdk:
 
 addons:
   sonarcloud:
-    organization: "rovingeye-github"
+    organization: "thecheerfuldev-github"
 
 cache:
   directories:

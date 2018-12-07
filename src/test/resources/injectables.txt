@@ -1,2 +1,2 @@
-nl.rovingeye.injectinator.example.logger.Logger, nl.rovingeye.injectinator.example.logger.DefaultLogger
-nl.rovingeye.injectinator.example.logger.AnotherLogger, nl.rovingeye.injectinator.example.logger.ExtraLogger
+nl.thecheerfuldev.injectinator.example.logger.Logger, nl.thecheerfuldev.injectinator.example.logger.DefaultLogger
+nl.thecheerfuldev.injectinator.example.logger.AnotherLogger, nl.thecheerfuldev.injectinator.example.logger.ExtraLogger
