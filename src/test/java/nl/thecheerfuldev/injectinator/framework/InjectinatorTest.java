@@ -29,7 +29,6 @@ import nl.thecheerfuldev.injectinator.example.service.ExampleSetterSingletonServ
 import nl.thecheerfuldev.injectinator.framework.annotation.InjectMe;
 import nl.thecheerfuldev.injectinator.framework.module.AbstractConfigModule;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -63,7 +62,7 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectInnerClassWithConstructorInjection() throws Exception {
+    void injectInnerClassWithConstructorInjection() throws Exception {
         this.injectinator = Injectinator.getInjectinator(new AbstractConfigModule() {
             @Override
             public void configure() {
@@ -76,7 +75,7 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectInnerClassWithFieldInjection() throws Exception {
+    void injectInnerClassWithFieldInjection() throws Exception {
         this.injectinator = Injectinator.getInjectinator(new AbstractConfigModule() {
             @Override
             public void configure() {
@@ -89,7 +88,7 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectInnerClassWithSetterInjection() throws Exception {
+    void injectInnerClassWithSetterInjection() throws Exception {
         this.injectinator = Injectinator.getInjectinator(new AbstractConfigModule() {
             @Override
             public void configure() {
@@ -102,17 +101,17 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectWithTooManyAnnotationsThrowsException() {
+    void injectWithTooManyAnnotationsThrowsException() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.injectinator.inject(ClassWithTooManyAnnotations.class));
     }
 
     @Test
-    public void injectNullReturnsNull() throws Exception {
+    void injectNullReturnsNull() throws Exception {
         assertNull(this.injectinator.inject(null));
     }
 
     @Test
-    public void injectClassWithConstructorInjection() throws Exception {
+    void injectClassWithConstructorInjection() throws Exception {
         this.injectinator = getInjectinator();
         final ExampleConstructorService exampleConstructorService1 = this.injectinator.inject(ExampleConstructorService.class);
         final ExampleConstructorService exampleConstructorService2 = this.injectinator.inject(ExampleConstructorService.class);
@@ -121,7 +120,7 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectClassWithSingletonConstructorInjection() throws Exception {
+    void injectClassWithSingletonConstructorInjection() throws Exception {
         this.injectinator = getInjectinator();
         final ExampleConstructorSingletonService exampleConstructorSingletonService1 = this.injectinator.inject(ExampleConstructorSingletonService.class);
         final ExampleConstructorSingletonService exampleConstructorSingletonService2 = this.injectinator.inject(ExampleConstructorSingletonService.class);
@@ -130,7 +129,7 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectClassWithFieldInjection() throws Exception {
+    void injectClassWithFieldInjection() throws Exception {
         this.injectinator = getInjectinator();
         final ExampleFieldService exampleFieldService1 = this.injectinator.inject(ExampleFieldService.class);
         final ExampleFieldService exampleFieldService2 = this.injectinator.inject(ExampleFieldService.class);
@@ -139,7 +138,7 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectClassWithSingletonFieldInjection() throws Exception {
+    void injectClassWithSingletonFieldInjection() throws Exception {
         this.injectinator = getInjectinator();
         final ExampleFieldSingletonService exampleFieldSingletonService1 = this.injectinator.inject(ExampleFieldSingletonService.class);
         final ExampleFieldSingletonService exampleFieldSingletonService2 = this.injectinator.inject(ExampleFieldSingletonService.class);
@@ -148,7 +147,7 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectClassWithSetterInjection() throws Exception {
+    void injectClassWithSetterInjection() throws Exception {
         this.injectinator = getInjectinator();
         final ExampleSetterService exampleSetterService1 = this.injectinator.inject(ExampleSetterService.class);
         final ExampleSetterService exampleSetterService2 = this.injectinator.inject(ExampleSetterService.class);
@@ -157,7 +156,7 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectClassWithSingletonSetterInjection() throws Exception {
+    void injectClassWithSingletonSetterInjection() throws Exception {
         this.injectinator = getInjectinator();
         final ExampleSetterSingletonService exampleSetterSingletonService1 = this.injectinator.inject(ExampleSetterSingletonService.class);
         final ExampleSetterSingletonService exampleSetterSingletonService2 = this.injectinator.inject(ExampleSetterSingletonService.class);
@@ -166,7 +165,7 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectClassWithTooManySetterParametersThrowsException() {
+    void injectClassWithTooManySetterParametersThrowsException() {
         this.injectinator = getInjectinator();
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.injectinator.inject(ClassWithTooManySetterParameters.class));
     }
