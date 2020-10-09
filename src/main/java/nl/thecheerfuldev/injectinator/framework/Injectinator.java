@@ -152,7 +152,7 @@ public class Injectinator {
         }
 
         final Constructor<T> declaredConstructor = classToInjectInto.getDeclaredConstructor(enclosingClass);
-        return declaredConstructor.newInstance(enclosingClass.newInstance());
+        return declaredConstructor.newInstance(enclosingClass.getConstructor().newInstance());
     }
 
     private Object[] getConstructorParameterInstances(final Class<?> enclosingClass, final Constructor<?> constructor) throws Exception {
