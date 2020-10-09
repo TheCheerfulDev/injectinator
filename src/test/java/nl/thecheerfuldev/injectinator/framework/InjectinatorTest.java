@@ -28,19 +28,19 @@ import nl.thecheerfuldev.injectinator.example.service.ExampleSetterService;
 import nl.thecheerfuldev.injectinator.example.service.ExampleSetterSingletonService;
 import nl.thecheerfuldev.injectinator.framework.annotation.InjectMe;
 import nl.thecheerfuldev.injectinator.framework.module.AbstractConfigModule;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class InjectinatorTest {
 
@@ -49,10 +49,7 @@ public class InjectinatorTest {
     private static final List<String> extra = new ArrayList<>();
     private static final List<String> another = new ArrayList<>();
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
-    @Before
+    @BeforeEach
     public void setUp() {
         log.clear();
         extra.clear();
@@ -105,10 +102,8 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectWithTooManyAnnotationsThrowsException() throws Exception {
-        this.expectedException.expect(IllegalArgumentException.class);
-        this.expectedException.expectMessage("Only constructor, field OR setter injection allowed in a single class.");
-        this.injectinator.inject(InjectinatorTest.ClassWithTooManyAnnotations.class);
+    public void injectWithTooManyAnnotationsThrowsException() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.injectinator.inject(ClassWithTooManyAnnotations.class));
     }
 
     @Test
@@ -171,11 +166,9 @@ public class InjectinatorTest {
     }
 
     @Test
-    public void injectClassWithTooManySetterParametersThrowsException() throws Exception {
+    public void injectClassWithTooManySetterParametersThrowsException() {
         this.injectinator = getInjectinator();
-        this.expectedException.expect(IllegalArgumentException.class);
-        this.expectedException.expectMessage("A setter can only have 1 parameter.");
-        this.injectinator.inject(InjectinatorTest.ClassWithTooManySetterParameters.class);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.injectinator.inject(ClassWithTooManySetterParameters.class));
     }
 
     private Injectinator getInjectinator() {

@@ -16,15 +16,15 @@
 
 package nl.thecheerfuldev.injectinator.framework.module;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class AbstractConfigModuleTest {
 
@@ -32,10 +32,7 @@ public class AbstractConfigModuleTest {
     private static final Class<ArrayList> SUB_CLASS = ArrayList.class;
     private AbstractConfigModule configModule;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
-    @Before
+    @BeforeEach
     public void setUp() {
         this.configModule = new AbstractConfigModule() {
             @Override
@@ -53,8 +50,6 @@ public class AbstractConfigModuleTest {
 
     @Test
     public void getInjectableNoInjectableThrowsException() {
-        this.expectedException.expect(IllegalArgumentException.class);
-        this.expectedException.expectMessage("There is no injectable for type: class java.lang.String");
-        this.configModule.getInjectable(String.class);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.configModule.getInjectable(String.class));
     }
 }

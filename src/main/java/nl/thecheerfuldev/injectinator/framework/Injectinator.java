@@ -69,7 +69,7 @@ public class Injectinator {
         }
 
         if (isMoreThanOneAnnotatedTypePresent(classToInjectInto, InjectMe.class)) {
-            throw new IllegalArgumentException("Only constructor, field OR setter injection allowed in a single class.");
+            throw new IllegalArgumentException("Only constructor, field OR setter injection allowed within a single class.");
         }
 
         return injectFieldsIntoClass(classToInjectInto);
@@ -139,7 +139,7 @@ public class Injectinator {
     }
 
     private <T> T getInstance(final Class<T> type) throws Exception {
-        return isInnerClass(type) ? getInnerClassInstance(type) : type.newInstance();
+        return isInnerClass(type) ? getInnerClassInstance(type) : type.getConstructor().newInstance();
     }
 
     private <T> T getInnerClassInstance(final Class<T> classToInjectInto) throws Exception {
@@ -152,7 +152,7 @@ public class Injectinator {
         }
 
         final Constructor<T> declaredConstructor = classToInjectInto.getDeclaredConstructor(enclosingClass);
-        return declaredConstructor.newInstance(enclosingClass.newInstance());
+        return declaredConstructor.newInstance(enclosingClass.getConstructor().newInstance());
     }
 
     private Object[] getConstructorParameterInstances(final Class<?> enclosingClass, final Constructor<?> constructor) throws Exception {

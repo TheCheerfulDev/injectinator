@@ -16,24 +16,18 @@
 
 package nl.thecheerfuldev.injectinator.framework.module;
 
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FileConfigModuleTest {
 
     private static final String THIS_FILE_DOESNT_EXIST_TXT = "this_file_doesnt_exist.txt";
     private FileConfigModule fileConfigModule;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     @Test
     public void configureWithNonExistingFileThrowsIllegalArgumentException() {
         this.fileConfigModule = new FileConfigModule(THIS_FILE_DOESNT_EXIST_TXT);
-        this.expectedException.expect(IllegalArgumentException.class);
-        this.expectedException.expectMessage("Config resource ");
-        this.fileConfigModule.configure();
+
+        Assertions.assertThrows(IllegalArgumentException.class, this.fileConfigModule::configure);
     }
 }
