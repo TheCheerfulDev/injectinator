@@ -26,7 +26,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class AbstractConfigModuleTest {
+class AbstractConfigModuleTest {
 
     private static final Class<List> BASE_CLASS = List.class;
     private static final Class<ArrayList> SUB_CLASS = ArrayList.class;
@@ -44,12 +44,12 @@ public class AbstractConfigModuleTest {
     }
 
     @Test
-    public void getInjectableReturnsSubclass() {
+    void getInjectableReturnsSubclass() {
         assertEquals(SUB_CLASS, this.configModule.getInjectable(BASE_CLASS));
     }
 
     @Test
-    public void getInjectableNoInjectableThrowsException() {
+    void getInjectableNoInjectableThrowsException() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.configModule.getInjectable(String.class));
     }
 }
