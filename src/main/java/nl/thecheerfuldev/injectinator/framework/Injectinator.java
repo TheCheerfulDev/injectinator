@@ -72,10 +72,10 @@ public class Injectinator {
             throw new IllegalArgumentException("Only constructor, field OR setter injection allowed within a single class.");
         }
 
-        return injectFieldsIntoClass(classToInjectInto);
+        return injectIntoClass(classToInjectInto);
     }
 
-    private <T> T injectFieldsIntoClass(final Class<T> classToInjectInto) throws Exception {
+    private <T> T injectIntoClass(final Class<T> classToInjectInto) throws Exception {
         for (final Constructor<?> constructor : classToInjectInto.getConstructors()) {
             if (constructor.isAnnotationPresent(InjectMe.class)) {
                 return injectFieldsViaConstructor(classToInjectInto, constructor);
@@ -112,14 +112,14 @@ public class Injectinator {
             return getInnerClassInstance(classToInjectInto);
         }
 
-        final Class<?>[] parameterTypes = constructor.getParameterTypes();
-        final Object[] objArr = new Object[parameterTypes.length];
+        final Class<?>[] dependencyTypes = constructor.getParameterTypes();
+        final Object[] dependencies = new Object[dependencyTypes.length];
         int i = 0;
-        for (final Class<?> dependency : parameterTypes) {
-            objArr[i++] = (constructor.getAnnotation(InjectMe.class).injectionType() == InjectionType.SINGLETON) ?
+        for (final Class<?> dependency : dependencyTypes) {
+            dependencies[i++] = (constructor.getAnnotation(InjectMe.class).injectionType() == InjectionType.SINGLETON) ?
                     getSingleton(dependency) : inject(this.configModule.getInjectable(dependency));
         }
-        return classToInjectInto.getConstructor(parameterTypes).newInstance(objArr);
+        return classToInjectInto.getConstructor(dependencyTypes).newInstance(dependencies);
     }
 
     private <T> T injectFields(final Class<T> classToInjectInto) throws Exception {
@@ -171,10 +171,9 @@ public class Injectinator {
 
     @SuppressWarnings("unchecked")
     private <T> T getSingleton(final Class<T> type) throws Exception {
-        if (this.singletons.containsKey(type)) {
-            return (T) this.singletons.get(type);
+        if (!this.singletons.containsKey(type)) {
+            this.singletons.put(type, inject(this.configModule.getInjectable(type)));
         }
-        this.singletons.put(type, inject(this.configModule.getInjectable(type)));
         return (T) this.singletons.get(type);
     }
 
@@ -190,7 +189,7 @@ public class Injectinator {
         if (isAnnotationPresent(annotation, clazz.getDeclaredFields())) {
             annotationCounter++;
         }
-        if (isAnnotationPresent(annotation, clazz.getDeclaredMethods())) {
+        if (isAnnotationPresent(annotation, clazz.getMethods())) {
             annotationCounter++;
         }
 
